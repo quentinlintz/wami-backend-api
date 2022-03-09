@@ -12,16 +12,13 @@ app.get('/random', async (req, res, next) => {
 
   axios
     .get('https://api.datamuse.com/words?rel_jja=' + answer)
-    .then((allHints) => {
+    .then((json) => {
+      const allHints = _.sampleSize(json.data, 5);
       let hints = [];
 
-      // Push the first 5 hints into the array
-      for (let i = 0; i < 5; i++) {
-        const word = allHints.data[i].word;
-        word !== undefined ? hints.push(word) : hints.push('');
+      for (let i = 0; i < allHints.length; i++) {
+        hints.push(allHints[i].word);
       }
-
-      hints = hints.reverse();
 
       const challengeData = {
         answer,
