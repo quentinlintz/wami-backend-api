@@ -6,7 +6,7 @@ const friendlyWords = require('friendly-words');
 const _ = require('lodash');
 
 // Get the current daily challenge object from the database
-app.get('/daily', async (req, res, next) => {
+app.get('/random', async (req, res, next) => {
   // Get one random object word
   const answer = _.sampleSize(friendlyWords.objects)[0];
 
