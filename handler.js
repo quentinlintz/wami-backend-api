@@ -2,22 +2,26 @@ const serverless = require('serverless-http');
 const express = require('express');
 const app = express();
 const axios = require('axios');
-const friendlyWords = require('friendly-words');
 const _ = require('lodash');
+const nouns = require('./nouns');
+
+const TOTAL_HINTS = 8;
 
 // Get the current daily challenge object from the database
 app.get('/random', async (req, res, next) => {
   // Get one random object word
-  const answer = _.sampleSize(friendlyWords.objects)[0];
+  const answer = _.sampleSize(nouns)[0];
 
   axios
-    .get('https://api.datamuse.com/words?rel_jja=' + answer)
+    .get('https://api.datamuse.com/words?rel_jjb=' + answer)
     .then((json) => {
-      const allHints = _.sampleSize(json.data, 5);
+      const allHints = json.data;
       let hints = [];
 
-      for (let i = 0; i < allHints.length; i++) {
-        hints.push(allHints[i].word);
+      for (let i = 0; i < TOTAL_HINTS; i++) {
+        allHints[i] !== undefined
+          ? hints.push(allHints[i].word)
+          : hints.push('');
       }
 
       const challengeData = {

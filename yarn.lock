@@ -171,11 +171,6 @@ fresh@0.5.2:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
   integrity sha1-PYyt2Q2XZWn6g1qx+OSyOhBWBac=
 
-friendly-words@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/friendly-words/-/friendly-words-1.2.0.tgz#db6d9842f510d94d0bd220b7609a3188a52f80a8"
-  integrity sha512-KO9vxmqnaaHJy5O83V9vJV3e3gmoeHVJoqndqbiGcFQgYVdj1gvCy8NlGkqATAxY7PyTenFdyJ6GoYxxFu52TQ==
-
 http-errors@1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.8.1.tgz#7c3f28577cbc8a207388455dbd62295ed07bd68c"
