@@ -4,6 +4,7 @@
   "description": "Backend API for WAMI",
   "dependencies": {
     "axios": "^0.26.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "lodash": "^4.17.21",
     "serverless-http": "^2.7.0"

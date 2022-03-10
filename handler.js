@@ -1,11 +1,19 @@
 const serverless = require('serverless-http');
 const express = require('express');
-const app = express();
+const cors = require('cors');
 const axios = require('axios');
 const _ = require('lodash');
 const nouns = require('./nouns');
+const app = express();
 
 const TOTAL_HINTS = 8;
+
+const CORS_OPTIONS = {
+  origin: process.env.ALLOWED_ORIGIN,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(CORS_OPTIONS));
 
 // Get the current daily challenge object from the database
 app.get('/random', async (req, res, next) => {
