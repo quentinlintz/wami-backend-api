@@ -1,22 +1,44 @@
-const serverless = require("serverless-http");
-const express = require("express");
+const serverless = require('serverless-http');
+const express = require('express');
 const app = express();
+const axios = require('axios');
+const _ = require('lodash');
+const nouns = require('./nouns');
 
-app.get("/", (req, res, next) => {
-  return res.status(200).json({
-    message: "Hello from root!",
-  });
-});
+const TOTAL_HINTS = 8;
 
-app.get("/hello", (req, res, next) => {
-  return res.status(200).json({
-    message: "Hello from path!",
-  });
+// Get the current daily challenge object from the database
+app.get('/random', async (req, res, next) => {
+  // Get one random object word
+  const answer = _.sampleSize(nouns)[0];
+
+  axios
+    .get('https://api.datamuse.com/words?rel_jjb=' + answer)
+    .then((json) => {
+      const allHints = json.data;
+      let hints = [];
+
+      for (let i = 0; i < TOTAL_HINTS; i++) {
+        allHints[i] !== undefined
+          ? hints.push(allHints[i].word)
+          : hints.push('');
+      }
+
+      const challengeData = {
+        answer,
+        hints,
+      };
+
+      return res.status(200).json(challengeData);
+    })
+    .catch((err) => {
+      return next(err);
+    });
 });
 
 app.use((req, res, next) => {
   return res.status(404).json({
-    error: "Not Found",
+    error: 'Not Found',
   });
 });
 
