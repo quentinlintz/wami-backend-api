@@ -13,6 +13,18 @@ const CORS_OPTIONS = {
   optionsSuccessStatus: 200,
 };
 
+const options = (entry) => {
+  return {
+    method: 'GET',
+    url: 'https://twinword-word-associations-v1.p.rapidapi.com/associations/',
+    params: { entry },
+    headers: {
+      'x-rapidapi-host': 'twinword-word-associations-v1.p.rapidapi.com',
+      'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+    },
+  };
+};
+
 app.use(cors(CORS_OPTIONS));
 
 // Get the current daily challenge object from the database
@@ -21,16 +33,10 @@ app.get('/random', async (req, res, next) => {
   const answer = _.sampleSize(nouns)[0];
 
   axios
-    .get('https://api.datamuse.com/words?rel_jjb=' + answer)
-    .then((json) => {
-      const allHints = json.data;
-      let hints = [];
-
-      for (let i = 0; i < TOTAL_HINTS; i++) {
-        allHints[i] !== undefined
-          ? hints.push(allHints[i].word)
-          : hints.push('');
-      }
+    .request(options(answer))
+    .then((response) => {
+      console.log(response);
+      const hints = _.sampleSize(response.data.associations_array, TOTAL_HINTS);
 
       const challengeData = {
         answer,
