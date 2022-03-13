@@ -1,9 +1,12 @@
 const serverless = require('serverless-http');
+const AWS = require('aws-sdk');
+const uuid = require('uuid');
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const _ = require('lodash');
 const nouns = require('./nouns');
+const client = new AWS.DynamoDB.DocumentClient();
 const app = express();
 
 const TOTAL_HINTS = 8;
@@ -27,15 +30,14 @@ const options = (entry) => {
 
 app.use(cors(CORS_OPTIONS));
 
-// Get the current daily challenge object from the database
-app.get('/random', async (req, res, next) => {
+// Get a new, random challenge
+app.get('/new', async (req, res, next) => {
   // Get one random object word
   const answer = _.sampleSize(nouns)[0];
 
   axios
     .request(options(answer))
     .then((response) => {
-      console.log(response);
       const hints = _.sampleSize(response.data.associations_array, TOTAL_HINTS);
 
       const challengeData = {
@@ -48,12 +50,6 @@ app.get('/random', async (req, res, next) => {
     .catch((err) => {
       return next(err);
     });
-});
-
-app.use((req, res, next) => {
-  return res.status(404).json({
-    error: 'Not Found',
-  });
 });
 
 module.exports.handler = serverless(app);

@@ -7,9 +7,35 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: us-east-2
+  # iamRoleStatements:
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:GetItem
+  #     Resource: 'arn:aws:dynamodb:${self:provider.region}:970418675460:table/challenges'
 
 functions:
-  api:
-    handler: handler.handler
+  today:
+    handler: src/functions/challenges/today.handler
     events:
-      - httpApi: '*'
+      - http:
+          path: today
+          method: get
+  new:
+    handler: src/functions/challenges/new.handler
+    events:
+      - http:
+          path: new
+          method: get
+# resources:
+#   Resources:
+#     ChallengesTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: challenges
+#         BillingMode: PAY_PER_REQUEST
+#         AttributeDefinitions:
+#           - AttributeName: id
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: id
+#             KeyType: HASH
