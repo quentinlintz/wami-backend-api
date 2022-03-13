@@ -1,9 +1,8 @@
 const serverless = require('serverless-http');
 const AWS = require('aws-sdk');
-const uuid = require('uuid');
 const express = require('express');
 const cors = require('cors');
-const client = new AWS.DynamoDB.DocumentClient();
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 const app = express();
 
 const CORS_OPTIONS = {

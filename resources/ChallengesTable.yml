@@ -4,8 +4,8 @@ ChallengesTable:
     TableName: ChallengesTable-${self:provider.stage}
     BillingMode: PAY_PER_REQUEST
     AttributeDefinitions:
-      - AttributeName: id
-        AttributeType: S
+      - AttributeName: date
+        AttributeType: N
     KeySchema:
-      - AttributeName: id
+      - AttributeName: date
         KeyType: HASH

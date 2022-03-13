@@ -1,7 +1,7 @@
 const serverless = require('serverless-http');
 const AWS = require('aws-sdk');
-const { v4: uuidv4 } = require('uuid');
 const express = require('express');
+const format = require('date-format');
 const cors = require('cors');
 const axios = require('axios');
 const _ = require('lodash');
@@ -32,43 +32,34 @@ app.use(cors(CORS_OPTIONS));
 
 // Get a new, random challenge to tomorrow
 app.post('/new', async (req, res, next) => {
-  // Check if the challenge for tomorrow has been already created
-  // await client;
-
-  // Get tomorrow's date
-  let today = new Date();
+  // Get tomorrow's date in the form of YYYYMMDD as an integer
   let tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-  tomorrow.setMonth(today.getMonth() + 1);
-  let date =
-    tomorrow.getMonth() +
-    '-' +
-    tomorrow.getDate() +
-    '-' +
-    tomorrow.getFullYear();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const date = parseInt(format('yyyyMMdd', tomorrow));
 
   // Get one random object word
   const answer = _.sampleSize(nouns)[0];
 
   // Request a set of hints and take a subset
+  const response = await axios.request(options(answer));
+  const hints = _.sampleSize(response.data.associations_array, TOTAL_HINTS);
+
+  const challengeData = {
+    date,
+    answer,
+    hints,
+  };
+
   try {
-    const response = await axios.request(options(answer));
-    const hints = _.sampleSize(response.data.associations_array, TOTAL_HINTS);
-
-    const challengeData = {
-      id: uuidv4(),
-      date,
-      answer,
-      hints,
-    };
-
-    // Add the new challenge information to the table
-    // await dynamodb
-    //   .put({
-    //     TableName: process.env.CHALLENGE_TABLE_NAME,
-    //     Item: challengeData,
-    //   })
-    //   .promise();
+    // Add the new challenge information to the table if one for tomorrow doesn't exist
+    await dynamodb
+      .put({
+        TableName: process.env.CHALLENGES_TABLE_NAME,
+        Item: challengeData,
+        ConditionExpression: 'attribute_not_exists(#challenge_day)',
+        ExpressionAttributeNames: { '#challenge_day': 'date' },
+      })
+      .promise();
 
     return res.status(200).json(challengeData);
   } catch (error) {
