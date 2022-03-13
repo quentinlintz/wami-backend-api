@@ -7,9 +7,30 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: us-east-2
+  environment:
+    CHALLENGES_TABLE_NAME: ${self:custom.ChallengesTable.name}
+  iamRoleStatements:
+    - ${file(iam/ChallengesTableIAM.yml):ChallengesTableIAM}
+
+resources:
+  Resources:
+    ChallengesTable: ${file(resources/ChallengesTable.yml):ChallengesTable}
 
 functions:
-  api:
-    handler: handler.handler
+  today:
+    handler: src/functions/challenges/today.handler
     events:
-      - httpApi: '*'
+      - http:
+          path: today
+          method: get
+  new:
+    handler: src/functions/challenges/new.handler
+    events:
+      - http:
+          path: new
+          method: post
+
+custom:
+  ChallengesTable:
+    name: !Ref ChallengesTable
+    arn: !GetAtt ChallengesTable.Arn
