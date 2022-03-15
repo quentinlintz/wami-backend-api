@@ -17,17 +17,14 @@ resources:
     ChallengesTable: ${file(resources/ChallengesTable.yml):ChallengesTable}
 
 functions:
-  today:
-    handler: src/functions/challenges/today.handler
+  challenge:
+    handler: functions/challenge/handler.handler
     events:
       - http:
-          path: today
+          path: challenge
           method: get
-  new:
-    handler: src/functions/challenges/new.handler
-    events:
       - http:
-          path: new
+          path: challenge
           method: post
 
 custom:
