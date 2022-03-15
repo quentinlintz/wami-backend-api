@@ -30,8 +30,29 @@ const options = (entry) => {
 
 app.use(cors(CORS_OPTIONS));
 
-// Get a new, random challenge to tomorrow
-app.post('/new', async (req, res, next) => {
+// Get the current daily challenge object from the database
+app.get('/challenge', async (req, res, next) => {
+  const date = parseInt(format('yyyyMMdd', new Date()));
+
+  // Retrieve the current challenge from the database
+  try {
+    const result = await dynamodb
+      .get({
+        TableName: process.env.CHALLENGES_TABLE_NAME,
+        Key: { date },
+      })
+      .promise();
+
+    const challengeData = result.Item;
+
+    return res.status(200).json(challengeData);
+  } catch (error) {
+    return res.status(400).json({ error: error.toString() });
+  }
+});
+
+// Create a new, random challenge to tomorrow
+app.post('/challenge', async (req, res, next) => {
   // Get tomorrow's date in the form of YYYYMMDD as an integer
   let tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);

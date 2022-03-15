@@ -9,25 +9,24 @@ provider:
   region: us-east-2
   environment:
     CHALLENGES_TABLE_NAME: ${self:custom.ChallengesTable.name}
-  iamRoleStatements:
-    - ${file(iam/ChallengesTableIAM.yml):ChallengesTableIAM}
+  iam:
+    role:
+      statements:
+        - ${file(iam/ChallengesTableIAM.yml):ChallengesTableIAM}
 
 resources:
   Resources:
     ChallengesTable: ${file(resources/ChallengesTable.yml):ChallengesTable}
 
 functions:
-  today:
-    handler: src/functions/challenges/today.handler
+  challenge:
+    handler: functions/challenge/handler.handler
     events:
       - http:
-          path: today
+          path: challenge
           method: get
-  new:
-    handler: src/functions/challenges/new.handler
-    events:
       - http:
-          path: new
+          path: challenge
           method: post
 
 custom:
