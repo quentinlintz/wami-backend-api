@@ -62,7 +62,16 @@ app.post('/challenge', async (req, res, next) => {
   const answer = _.sampleSize(nouns)[0];
 
   // Request a set of hints and take a subset
-  const response = await axios.request(options(answer));
+  let response;
+  let retry = 1;
+  do {
+    console.log(`try #${retry}`);
+    response = await axios.request(options(answer));
+    retry += 1;
+  } while (
+    response.data.associations_array.length <= TOTAL_HINTS &&
+    retry <= 10
+  );
   const hints = _.sampleSize(response.data.associations_array, TOTAL_HINTS);
 
   const challengeData = {
