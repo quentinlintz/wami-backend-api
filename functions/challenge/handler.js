@@ -32,7 +32,15 @@ app.use(cors(CORS_OPTIONS));
 
 // Get the current daily challenge object from the database
 app.get('/challenge', async (req, res, next) => {
-  const date = parseInt(format('yyyyMMdd', new Date()));
+  let date;
+  console.log(req.query);
+  if (req.query.bot !== undefined) {
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    date = parseInt(format('yyyyMMdd', yesterday));
+  } else {
+    date = parseInt(format('yyyyMMdd', new Date()));
+  }
 
   // Retrieve the current challenge from the database
   try {
@@ -65,7 +73,6 @@ app.post('/challenge', async (req, res, next) => {
   let response;
   let retry = 1;
   do {
-    console.log(`try #${retry}`);
     response = await axios.request(options(answer));
     retry += 1;
   } while (
